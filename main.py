@@ -1,4 +1,5 @@
 import csv
+from email import message
 import re
 import os
 from telegram import Update
@@ -64,15 +65,21 @@ def parse_text(text):
     return data
 
 # Handler ketika ada pesan masuk ke grup
+# Handler ketika ada pesan masuk ke grup
 async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    # Pastikan pesan memiliki teks (bukan cuma stiker/foto tanpa caption)
-    if not update.message or not update.message.text:
+    # 1. Pastikan objek pesan itu ada
+    if not update.message:
         return
         
-    text = update.message.text
+    # 2. Ambil teks biasa ATAU caption dari gambar
+    text = update.message.text or update.message.caption
+    
+    # 3. Kalau pesannya benar-benar kosong (misal: stiker atau foto tanpa caption), hentikan
+    if not text:
+        return
     
     # Filter: Hanya proses pesan yang mengandung kata "SALARY"
-    if "SALARY" in text:
+    if "SALARY" in text.upper(): # Pakai .upper() biar aman kalau ada yang ngetik 'Salary'
         parsed_data = parse_text(text)
         
         # Tulis data yang sudah diekstrak ke dalam file CSV
@@ -87,7 +94,7 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 parsed_data["link_payment"]
             ])
             
-        print(f"Data tersimpan ke CSV | Client: {parsed_data['client_name']}")
+        print(f"✅ Data tersimpan ke CSV | Client: {parsed_data['client_name']}")
 
 # Fungsi utama untuk menjalankan bot
 def main():
@@ -97,7 +104,7 @@ def main():
     app = Application.builder().token(TOKEN).build()
     
     # Tambahkan listener untuk pesan teks
-    app.add_handler(MessageHandler(filters.TEXT, handle_message))
+    app.add_handler(MessageHandler(filters.ALL & ~filters.COMMAND, handle_message))
     
     print("Bot sedang berjalan dan memantau grup...")
     app.run_polling()
