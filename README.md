@@ -6,7 +6,7 @@
 
 ## Overview
 
-Tele-Salary-Bot is a Python-based Telegram bot that automatically monitors a Telegram group or channel for salary-formatted forwarded messages. When a matching message is detected, the bot extracts the structured salary data from the message text using Regular Expressions (RegEx) and saves it directly into a `.csv` file.
+Tele-Salary-Bot is a Python-based Telegram bot that automatically monitors a Telegram group or channel for salary-formatted forwarded messages. When a matching message is detected, the bot extracts the structured salary data from the message text using Regular Expressions (RegEx) and saves it directly into a `spreadsheet` file.
 
 This bot is designed around a specific salary message format used in talent/agency workflows, where the message contains details like client name, session type, talent income, agency income, and payment links.
 
@@ -22,7 +22,7 @@ This bot is designed around a specific salary message format used in talent/agen
   - Talent Income (IDR)
   - Agency Income (IDR)
   - Payment Link
-- CSV export — appends extracted data into `data_salary.csv`, auto-creating the file with headers if it does not exist
+- Spreadsheet export — appends extracted data into `spreadsheet document`, auto-creating the file with headers if it does not exist
 - Fully automated — runs in the background polling for new messages, no manual trigger needed
 
 ---
@@ -33,7 +33,7 @@ This bot is designed around a specific salary message format used in talent/agen
 TeleBot/
 │
 ├── main.py              # Main bot logic (message handler, parser, CSV writer)
-├── data_salary.csv      # Output file where scraped salary data is stored
+├── spreadsheet document using cloud API     # Output file where scraped salary data is stored
 ├── requirement.txt      # Python dependencies
 ├── .gitignore           # Git ignore rules (.env, venv, etc.)
 ├── .env                 # (Not committed) Stores the bot token secret
@@ -60,7 +60,7 @@ If the message does not contain the word `SALARY`, the bot will ignore it entire
 
 ---
 
-## CSV Output Example
+## Spreadsheet Output Example
 
 The extracted data is saved to `data_salary.csv` in the following format:
 
@@ -78,7 +78,7 @@ The extracted data is saved to `data_salary.csv` in the following format:
 | python-telegram-bot | Telegram Bot API wrapper for receiving messages |
 | python-dotenv | Loads environment variables from `.env` file |
 | re (RegEx) | Parses and extracts structured fields from message text |
-| csv | Writes extracted data into a CSV file |
+| google spread
 
 ---
 
@@ -117,6 +117,7 @@ Create a `.env` file in the root directory:
 
 ```
 BOT_TOKEN=your_telegram_bot_token_here
+SPREADSHEET_ID=10peoeWuHh1ipDAdx2-alYgqtm3Sd5f-3iZBjbHT4SnM
 ```
 
 Never commit your `.env` file. It is already listed in `.gitignore`.
@@ -130,7 +131,7 @@ python main.py
 The bot is now live and monitoring the group. When a salary message is detected, it will log:
 
 ```
-Data tersimpan ke CSV | Client: Meiora
+Data tersimpan ke SpreadSheet | Client: Meiora
 ```
 
 ---
@@ -155,7 +156,7 @@ RegEx Extraction
   - Link Payment
         |
         v
-  Append row to data_salary.csv
+  Append row into connected spreadsheet
 ```
 
 ---
@@ -164,7 +165,7 @@ RegEx Extraction
 
 - The bot only works with messages that strictly follow the expected salary message format
 - It only processes text messages — images, stickers, or media without captions are ignored
-- The CSV file grows indefinitely with no built-in data management or deduplication
+- The spreadsheet file grows indefinitely with no built-in data management or deduplication
 - No web interface or dashboard — data must be viewed by opening the CSV file manually
 
 ---
