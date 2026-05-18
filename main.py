@@ -35,7 +35,7 @@ except Exception as e:
 # Fungsi untuk mengekstrak data dari teks dengan RegEx
 def parse_text(text):
     data = {
-        "periods": "", "presentase": "", "client_name": "",
+        "periods": "", "presentase": "","talen_name":"", "client_name": "",
         "session_type": "", "talent_income": "", "agency_income": "","feeq":"", "link_payment": ""
     }
 
@@ -45,6 +45,9 @@ def parse_text(text):
     perc_match = re.search(r"SALARY\.\s*(\d+)%", text)
     if perc_match: data["persentase"] = perc_match.group(1) + "%"
         
+    talent_match = re.search(r"3\. Talent's Name:\s*(.+)", text)
+    if talent_match: data["talent_name"] = talent_match.group(1).strip()
+
     client_match = re.search(r"1\. Client's Name:\s*(.+)", text)
     if client_match: data["client_name"] = client_match.group(1).strip()
         
@@ -89,6 +92,7 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
             sheet.append_row([
                 parsed_data["periods"],
                 parsed_data["persentase"],
+                parsed_data["talent_name"],
                 parsed_data["client_name"],
                 parsed_data["session_type"],
                 parsed_data["feeq"],
@@ -96,7 +100,7 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 parsed_data["agency_income"],
                 parsed_data["link_payment"]
             ])
-            print(f"✅ Data tersimpan ke Google Sheets | Client: {parsed_data['client_name']}")
+            print(f"✅ Data tersimpan ke Google Sheets | Client: {parsed_data['client_name']}, Talent: {parsed_data['talent_name']}")
         except Exception as err:
             print(f"❌ Gagal menulis ke Google Sheets: {err}")
 
