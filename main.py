@@ -1,3 +1,4 @@
+from datetime import datetime
 import os
 import re
 import json
@@ -33,44 +34,53 @@ except Exception as e:
     print(f"❌ Gagal terhubung ke Google Sheets: {e}")
 
 # Fungsi untuk mengekstrak data dari teks dengan RegEx
+import re
+
 def parse_text(text):
+    # Inisialisasi dictionary (Typo 'presentase' sudah diperbaiki jadi 'persentase')
     data = {
-        "periods": "", "presentase": "","talen_name":"", "client_name": "",
-        "session_type": "", "talent_income": "", "agency_income": "","feeq":"", "link_payment": ""
+        "periods": "", "persentase": "", "talent_name": "", "client_name": "",
+        "session_type": "", "talent_income": "", "agency_income": "", "feeq": "", "link_payment": ""
     }
 
-    perc_match = re.search(r"Periods\s*=\s*(.*)", text)
-    if perc_match: data["periods"] = perc_match.group(1).strip()
-    
-    perc_match = re.search(r"SALARY\.\s*(\d+)%", text)
+    data["periods"] = datetime.now().strftime("%d-%m-%Y")
+
+    # 2. Ambil Persentase SALARY
+    perc_match = re.search(r"SALARY\.\s*(\d+)%", text, re.IGNORECASE)
     if perc_match: data["persentase"] = perc_match.group(1) + "%"
         
-    talent_match = re.search(r"3\. Talent's Name:\s*(.+)", text)
+    # 3. Ambil Talent's Name
+    talent_match = re.search(r"Talent['’]s\s+Name\s*[:=]\s*(.*)", text, re.IGNORECASE)
     if talent_match: data["talent_name"] = talent_match.group(1).strip()
 
-    client_match = re.search(r"1\. Client's Name:\s*(.+)", text)
+    # 4. Ambil Client's Name
+    client_match = re.search(r"1\. Client['’]s\s+Name\s*[:=]\s*(.*)", text, re.IGNORECASE)
     if client_match: data["client_name"] = client_match.group(1).strip()
         
-    session_match = re.search(r"2\. Session Type:\s*(.+)", text)
+    # 5. Ambil Session Type
+    session_match = re.search(r"2\. Session\s+Type\s*[:=]\s*(.*)", text, re.IGNORECASE)
     if session_match: data["session_type"] = session_match.group(1).strip()
         
-    feeq_match = re.search(r"FEEQ\s*:\s*([\d.]+)", text, re.IGNORECASE)
+    # 6. Ambil FEEQ
+    feeq_match = re.search(r"FEEQ\s*[:=]\s*([\d.]+)", text, re.IGNORECASE)
     if feeq_match: data["feeq"] = feeq_match.group(1).strip()
         
-    talent_match = re.search(r"=\s*([\d.]+)\s*IDR", text)
-    if talent_match: data["talent_income"] = talent_match.group(1).strip()
+    # 7. Ambil Talent's Income
+    income_match = re.search(r"=\s*([\d.]+)\s*IDR", text, re.IGNORECASE)
+    if income_match: data["talent_income"] = income_match.group(1).strip()
         
-    agency_match = re.search(r"Agency Income\s*=\s*([\d.]+)\s*IDR", text, re.IGNORECASE)
+    # 8. Ambil Agency Income
+    agency_match = re.search(r"Agency\s+Income\s*[:=]\s*([\d.]+)\s*IDR", text, re.IGNORECASE)
     if agency_match: data["agency_income"] = agency_match.group(1).strip()
         
-    link_match = re.search(r"5\. Link Payment\s*:\s*(.*)", text)
+    # 9. Ambil Link Payment
+    link_match = re.search(r"6\. Link\s+payment\s*[:=]\s*(.*)", text, re.IGNORECASE)
     if link_match: data["link_payment"] = link_match.group(1).strip()
         
     return data
 
-
 def run_dummy_server():
-    port = int(os.getenv("PORT", 8000))
+    port = int(os.getenv("PORT", 8080))
     server_addres=s = ('', port)
     httpd = HTTPServer(server_addres, SimpleHTTPRequestHandler)
     print(f"🚀 Dummy server berjalan di port {port} untuk menjaga koneksi tetap hidup...")
