@@ -1,4 +1,4 @@
-# Tele-Salary-Bot
+# Tele-Salary-Bot 
 
 > **Disclaimer:** This is a study/learning project and is not intended for professional or production use. It was built purely for educational purposes to explore Telegram Bot API, automation, and data scraping with Python.
 
